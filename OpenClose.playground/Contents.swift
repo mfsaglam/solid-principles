@@ -36,6 +36,31 @@ class ProductFilter {
         
         return result
     }
+    
+    func filterBySize(products: [Product], size: Size) -> [Product] {
+        var result = [Product]()
+        
+        for p in products {
+            if p.size == size {
+                result.append(p)
+            }
+        }
+        
+        return result
+    }
+}
+
+//Specification
+
+protocol Specification {
+    associatedtype T
+    func isSatisfied(_ item: T) -> Bool
+}
+
+protocol Filter {
+    associatedtype T
+    func filter<Spec: Specification>(_ items: [T], spec: Spec) -> [T]
+        where Spec.T == T;
 }
 
 func main() {
