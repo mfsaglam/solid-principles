@@ -74,6 +74,33 @@ class ColorSpecification: Specification {
     }
 }
 
+class SizeSpecification: Specification {
+    typealias T = Product
+    let size: Size
+    
+    init(size: Size) {
+        self.size = size
+    }
+    func isSatisfied(_ item: Product) -> Bool {
+        item.size == size
+    }
+}
+
+class AndSpecification<T, SpecA: Specification, SpecB: Specification>: Specification
+                        where SpecA.T == SpecB.T, T == SpecA.T, T == SpecB.T {
+    let first: SpecA
+    let second: SpecB
+    
+    init(_ first: SpecA, _ second: SpecB) {
+        self.first = first
+        self.second = second
+    }
+    
+    func isSatisfied(_ item: T) -> Bool {
+        first.isSatisfied(item) && second.isSatisfied(item)
+    }
+}
+
 class BetterFilter: Filter {
     typealias T = Product
 
@@ -109,6 +136,12 @@ func main() {
     
     for p in bf.filter(products, spec: ColorSpecification(color: .green)) {
         print("- \(p.name) is green.")
+    }
+    
+    print("Large and blue items")
+    
+    for p in bf.filter(products, spec: AndSpecification(ColorSpecification(color: .blue), SizeSpecification(size: .large))) {
+        print("- \(p.name) is large and blue.")
     }
 }
 
